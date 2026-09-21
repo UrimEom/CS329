@@ -1,3 +1,6 @@
+const request = require('supertest');
+const app = require('./service');
+
 test('get cities', async () => {
   const getCitiesRes = await request(app).get('/cities');
   expect(getCitiesRes.status).toBe(200);
@@ -12,6 +15,26 @@ test('login', async () => {
   expect(loginRes.body.message).toMatch('Success');
   expect(loginRes.body.authorization).toMatch(/^[a-zA-Z0-9]*$/);
 });
+
+test('get cities', async () => {
+  const getCitiesRes = await request(app).get('/cities');
+  expect(getCitiesRes.status).toBe(200);
+  expect(getCitiesRes.headers['content-type']).toMatch('application/json; charset=utf-8');
+  expect(getCitiesRes.body).toMatchObject([{ name: 'Provo', population: 116618 }]);
+});
+
+test('login', login);
+
+async function login() {
+  const loginRes = await request(app).post('/login');
+
+  expect(loginRes.status).toBe(200);
+  expect(loginRes.headers['content-type']).toMatch('application/json; charset=utf-8');
+  expect(loginRes.body.message).toMatch('Success');
+  expect(loginRes.body.authorization).toMatch(/^[a-zA-Z0-9]*$/);
+
+  return loginRes.body.authorization;
+}
 
 test('add cities', async () => {
   const authToken = await login();
