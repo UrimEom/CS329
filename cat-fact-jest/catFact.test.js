@@ -22,3 +22,21 @@ test("add returns a cat fact", async () => {
   expect(result).toBe("Cats are cute.");
   expect(catFact.history()).toEqual(["Cats are cute."]);
 });
+
+test("stores multiple cat facts", async () => {
+  global.fetch = jest
+    .fn()
+    .mockResolvedValueOnce({
+      json: () => Promise.resolve({ data: ["Fact one"] }),
+    })
+    .mockResolvedValueOnce({
+      json: () => Promise.resolve({ data: ["Fact two"] }),
+    });
+
+  const catFact = new CatFact();
+
+  await catFact.add();
+  await catFact.add();
+
+  expect(catFact.history()).toEqual(["Fact one", "Fact two"]);
+});
