@@ -52,3 +52,27 @@ test("add returns null when fetch fails", async () => {
   expect(result).toBeNull();
   expect(catFact.history()).toEqual([]);
 });
+
+test("call gets a fact and sends it to the callback", async () => {
+  jest.useFakeTimers();
+
+  global.fetch = jest.fn(() =>
+    Promise.resolve({
+      json: () =>
+        Promise.resolve({
+          data: ["Timed fact"],
+        }),
+    })
+  );
+
+  const catFact = new CatFact();
+  const callback = jest.fn();
+
+  catFact.call(1000, callback);
+
+  await jest.advanceTimersByTimeAsync(1000);
+
+  expect(callback).toHaveBeenCalledWith("Timed fact");
+
+  jest.useRealTimers();
+});
