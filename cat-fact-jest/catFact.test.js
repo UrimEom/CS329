@@ -40,3 +40,15 @@ test("stores multiple cat facts", async () => {
 
   expect(catFact.history()).toEqual(["Fact one", "Fact two"]);
 });
+
+test("add returns null when fetch fails", async () => {
+  global.fetch = jest.fn(() =>
+    Promise.reject(new Error("Network error"))
+  );
+
+  const catFact = new CatFact();
+  const result = await catFact.add();
+
+  expect(result).toBeNull();
+  expect(catFact.history()).toEqual([]);
+});
